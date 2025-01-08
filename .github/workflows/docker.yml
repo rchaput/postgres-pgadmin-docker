@@ -1,0 +1,67 @@
+name: Build and publish Docker image
+
+on:
+  push:
+    # Trigger workflow on push to all branches (we will create a separate tag for each)
+    branches:
+      - '**'
+    # Trigger workflow on tags/versions (v1.0, v1.1, ...; we will create a separate tag for each)
+    tags:
+      - 'v*'
+  # Trigger workflow on pull requests to build the image (check that it works), but we won't push it to the registry
+  pull_request:
+  # Trigger workflow manually
+  workflow_dispatch:
+
+
+env:
+  IMAGE_NAME: postgres_pgadmin4
+
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout repository
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Extract metadata from repository (branch name, commit SHA, ...)
+      # See https://github.com/docker/metadata-action for details
+      - name: Extract Docker image metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ vars.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}
+          # type=ref,event=branch => Push refs/heads/master = master
+          # type=ref,event=tag => Push refs/tags/v1.0 = v1.0
+          # type=raw,value=latest,... => Commits on the master branch are also labelled "latest"
+          # PRs, schedules, etc. are ignored.
+          tags: |
+            type=ref,event=branch
+            type=ref,event=tag
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      # Login to registry
+      # Do not login on PRs, because we won't push the image anyway
+      - name: Log in to Docker Hub
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ vars.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # Set up the builder
+      # This will allow for more complex setups (different platforms, export cache, ...)
+      # Not necessary right now, but better for the future.
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Build the image, and push (on non-PRs)
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          platforms: linux/amd64
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          annotations: ${{ steps.meta.outputs.annotations }}
