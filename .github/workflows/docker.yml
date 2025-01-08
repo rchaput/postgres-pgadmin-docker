@@ -53,17 +53,22 @@ jobs:
           username: ${{ vars.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      # Set up emulation for multi-platform builds
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
       # Set up the builder
-      # This will allow for more complex setups (different platforms, export cache, ...)
-      # Not necessary right now, but better for the future.
+      # This allows for more complex setups (different platforms, export cache, ...)
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+        with:
+          platforms: linux/amd64, linux/arm64
 
       # Build the image, and push (on non-PRs)
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
           labels: ${{ steps.meta.outputs.labels }}
           tags: ${{ steps.meta.outputs.tags }}
