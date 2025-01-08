@@ -3,8 +3,10 @@ name: Build and publish Docker image
 on:
   push:
     # Trigger workflow on push to all branches (we will create a separate tag for each)
+    # Except branches that begin with `wip/` (Work-in-Progress)
     branches:
       - '**'
+      - '!wip/**'
     # Trigger workflow on tags/versions (v1.0, v1.1, ...; we will create a separate tag for each)
     tags:
       - 'v*'
