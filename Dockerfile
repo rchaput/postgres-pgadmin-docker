@@ -19,13 +19,14 @@ ENV POSTGRES_HOST_AUTH_METHOD='trust'
 # Install pgAdmin4
 # See https://www.pgadmin.org/download/pgadmin-4-apt/
 # And https://hub.docker.com/r/dcagatay/pwless-pgadmin4 for passwordless
-    # apt-get purge curl && apt-get autoremove; \
-    # apt-get clean; \
+# Because pgAdmin4 only supports the amd64 architecture, we must tell dpkg
+# to use this architecture, even if the current architecture is arm64.
 RUN set -ex; \
+    dpkg --add-architecture amd64; \
     apt-get update -y && apt-get install -y curl lsb-release; \
     curl -fsS https://www.pgadmin.org/static/packages_pgadmin_org.pub | gpg --dearmor -o /usr/share/keyrings/packages-pgadmin-org.gpg; \
-    echo "deb [signed-by=/usr/share/keyrings/packages-pgadmin-org.gpg] https://ftp.postgresql.org/pub/pgadmin/pgadmin4/apt/$(lsb_release -cs) pgadmin4 main" > /etc/apt/sources.list.d/pgadmin4.list && apt-get update; \
-    apt-get install -y pgadmin4-web uwsgi uwsgi-plugin-python3; \
+    echo "deb [signed-by=/usr/share/keyrings/packages-pgadmin-org.gpg arch=amd64,all] https://ftp.postgresql.org/pub/pgadmin/pgadmin4/apt/$(lsb_release -cs) pgadmin4 main" > /etc/apt/sources.list.d/pgadmin4.list && apt-get update; \
+    apt-get install -y pgadmin4-server uwsgi uwsgi-plugin-python3; \
     rm -rf /var/lib/apt/lists/*
 
 
