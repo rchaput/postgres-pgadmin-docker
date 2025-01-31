@@ -3,7 +3,7 @@ FROM postgres:17.2-bookworm
 # Set a few metadata (labels)
 LABEL org.opencontainers.image.authors="Remy Chaput" \
       org.opencontainers.image.url="https://github.com/rchaput/postgres-pgadmin-docker" \
-      org.opencontainers.image.version="1.0" \
+      org.opencontainers.image.version="2.0" \
       org.opencontainers.image.name="Postgres pgAdmin4" \
       org.opencontainers.image.description="A Docker image that contains both PostgreSQL (a database management system) and pgAdmin4 (a Web UI for Postgres), for teaching purposes."
 
@@ -22,9 +22,8 @@ ENV POSTGRES_HOST_AUTH_METHOD='trust'
 # Installing through pip (rather than apt) is easier for multi-platform...
 # Note: The `setup.py` script requires `pkg_resources`, but it is uninstalled
 #   when uninstalling python3-pip. So we explicitly install it through apt.
-# We also get the path to the pgadmin4 package automatically; it should yield
+# We get the path to the pgadmin4 package automatically; it should yield
 #   something like `/usr/local/lib/python3.11/dist-packages/pgadmin4`.
-
 RUN set -ex; \
     apt-get update -y && apt-get install -y python3 python3-pip python3-pkg-resources; \
     /usr/bin/pip3 install --break-system-packages pgadmin4; \
