@@ -19,13 +19,12 @@ ENV POSTGRES_HOST_AUTH_METHOD='trust'
 # Install pgAdmin4
 # See https://www.pgadmin.org/download/pgadmin-4-apt/
 # And https://hub.docker.com/r/dcagatay/pwless-pgadmin4 for passwordless
-    # apt-get purge curl && apt-get autoremove; \
-    # apt-get clean; \
+# Installing through pip (rather than apt) is easier for multi-platform...
+# TODO: get the path to `pgadmin4` automatically rather than assuming!
 RUN set -ex; \
-    apt-get update -y && apt-get install -y curl lsb-release; \
-    curl -fsS https://www.pgadmin.org/static/packages_pgadmin_org.pub | gpg --dearmor -o /usr/share/keyrings/packages-pgadmin-org.gpg; \
-    echo "deb [signed-by=/usr/share/keyrings/packages-pgadmin-org.gpg] https://ftp.postgresql.org/pub/pgadmin/pgadmin4/apt/$(lsb_release -cs) pgadmin4 main" > /etc/apt/sources.list.d/pgadmin4.list && apt-get update; \
-    apt-get install -y pgadmin4-web uwsgi uwsgi-plugin-python3; \
+    apt-get update -y && apt-get install -y python3 python3-pip; \
+    /usr/bin/pip3 install --break-system-packages pgadmin4; \
+    mkdir /usr/pgadmin4 && ln -s /usr/local/lib/python3.11/dist-packages/pgadmin4 /usr/pgadmin4/web; \
     rm -rf /var/lib/apt/lists/*
 
 
@@ -35,8 +34,8 @@ COPY pgadmin_servers.json /usr/pgadmin4/
 COPY pgadmin_config.py /usr/pgadmin4/web/config_local.py
 COPY --chmod=755 run_pgadmin.sh /usr/pgadmin4/run_pgadmin.sh
 RUN \
-    /usr/pgadmin4/venv/bin/python3 /usr/pgadmin4/web/setup.py setup-db; \
-    /usr/pgadmin4/venv/bin/python3 /usr/pgadmin4/web/setup.py load-servers /usr/pgadmin4/pgadmin_servers.json; \
+    /usr/bin/python3 /usr/pgadmin4/web/setup.py setup-db; \
+    /usr/bin/python3 /usr/pgadmin4/web/setup.py load-servers /usr/pgadmin4/pgadmin_servers.json; \
     mkdir -p /var/log/pgadmin4 /var/lib/pgadmin4; \
     echo "localhost:${POSTGRES_USER}:5432:${POSTGRES_DB}:${POSTGRES_USER}:${POSTGRES_PASSWORD}" >> /var/lib/pgadmin4/pgpass; \
     useradd --create-home --home-dir /home/pgadmin --user-group --shell /bin/false pgadmin; \
