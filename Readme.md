@@ -33,14 +33,12 @@ docker pull rchaput/postgres_pgadmin4:latest
 Then instantiate a new container with:
 
 ```shell
-docker run --platform linux/amd64 --name YOUR_CONTAINER_NAME -p 127.0.0.1:5050:5050 -d rchaput/postgres_pgadmin4:latest
+docker run --name YOUR_CONTAINER_NAME -p 127.0.0.1:5050:5050 -d rchaput/postgres_pgadmin4:latest
 ```
 
 You may now access the pgAdmin4 UI at [http://localhost:5050/](http://localhost:5050/)
 
 *Notes*:
-
-- pgAdmin4 was only tested with the linux/amd64 platform. As such, this image is (for now) only available for this platform. You may omit the `--platform linux/amd64` argument if this is already the platform you are using, but you **must** include it with any other platform, including, e.g., Windows, or Apple Silicon. The image should work through the emulation layer.
 
 - Specifying `127.0.0.1` when binding the port ensures that only the local interface can be used to access pgAdmin4. Using the (concise) `5050:5050` notation binds to *all* interfaces and is therefore **unsafe**.
 
@@ -81,7 +79,7 @@ You may also restore a database from such a backup file directly from the comman
 
 ---
 
-The base Postgres image also exposes the `5432` port for direct access to Postgres. This should not be necessary, as you can access Postgres through pgAdmin4, but you may also bind this port when instantiating the container, by using several `-p` arguments: `docker run --platform linux/amd64 --name YOUR_CONTAINER_NAME -p 127.0.0.1:5432:5432 -p 127.0.0.1:5050:5050 -d rchaput/postgres_pgadmin4:latest`
+The base Postgres image also exposes the `5432` port for direct access to Postgres. This should not be necessary, as you can access Postgres through pgAdmin4, but you may also bind this port when instantiating the container, by using several `-p` arguments: `docker run --name YOUR_CONTAINER_NAME -p 127.0.0.1:5432:5432 -p 127.0.0.1:5050:5050 -d rchaput/postgres_pgadmin4:latest`
 
 Of course, the host port can be changed if 5432 or 5050 are already in use.
 
