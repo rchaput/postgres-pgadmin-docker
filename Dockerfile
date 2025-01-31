@@ -22,11 +22,13 @@ ENV POSTGRES_HOST_AUTH_METHOD='trust'
 # Installing through pip (rather than apt) is easier for multi-platform...
 # Note: The `setup.py` script requires `pkg_resources`, but it is uninstalled
 #   when uninstalling python3-pip. So we explicitly install it through apt.
-# TODO: get the path to `pgadmin4` automatically rather than assuming!
+# We also get the path to the pgadmin4 package automatically; it should yield
+#   something like `/usr/local/lib/python3.11/dist-packages/pgadmin4`.
+
 RUN set -ex; \
     apt-get update -y && apt-get install -y python3 python3-pip python3-pkg-resources; \
     /usr/bin/pip3 install --break-system-packages pgadmin4; \
-    mkdir /usr/pgadmin4 && ln -s /usr/local/lib/python3.11/dist-packages/pgadmin4 /usr/pgadmin4/web; \
+    mkdir /usr/pgadmin4 && ln -s $(/usr/bin/python3 -c 'import pgadmin4; print(pgadmin4.__path__[0]);') /usr/pgadmin4/web; \
     apt-get remove --purge -y python3-pip; \
     apt-get autoclean -y && apt-get autoremove -y; \
     rm -rf /var/lib/apt/lists/*
