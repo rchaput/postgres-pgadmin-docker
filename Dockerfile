@@ -20,11 +20,15 @@ ENV POSTGRES_HOST_AUTH_METHOD='trust'
 # See https://www.pgadmin.org/download/pgadmin-4-apt/
 # And https://hub.docker.com/r/dcagatay/pwless-pgadmin4 for passwordless
 # Installing through pip (rather than apt) is easier for multi-platform...
+# Note: The `setup.py` script requires `pkg_resources`, but it is uninstalled
+#   when uninstalling python3-pip. So we explicitly install it through apt.
 # TODO: get the path to `pgadmin4` automatically rather than assuming!
 RUN set -ex; \
-    apt-get update -y && apt-get install -y python3 python3-pip; \
+    apt-get update -y && apt-get install -y python3 python3-pip python3-pkg-resources; \
     /usr/bin/pip3 install --break-system-packages pgadmin4; \
     mkdir /usr/pgadmin4 && ln -s /usr/local/lib/python3.11/dist-packages/pgadmin4 /usr/pgadmin4/web; \
+    apt-get remove --purge -y python3-pip; \
+    apt-get autoclean -y && apt-get autoremove -y; \
     rm -rf /var/lib/apt/lists/*
 
 
