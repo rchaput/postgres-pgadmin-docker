@@ -1,4 +1,4 @@
-FROM postgres:17.2-bookworm
+FROM postgres:18.1-bookworm
 
 # Set a few metadata (labels)
 LABEL org.opencontainers.image.authors="Remy Chaput" \

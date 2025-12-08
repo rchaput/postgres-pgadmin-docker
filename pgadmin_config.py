@@ -15,12 +15,14 @@ DEFAULT_BINARY_PATHS = {
     "pg-15": "",
     "pg-16": "",
     "pg-17": "",
+    "pg-18": "",
     "ppas": "/usr/bin",
     "ppas-13": "",
     "ppas-14": "",
     "ppas-15": "",
     "ppas-16": "",
-    "ppas-17": ""
+    "ppas-17": "",
+    "ppas-18": "",
 }
 
 # Change some paths for data and logs
