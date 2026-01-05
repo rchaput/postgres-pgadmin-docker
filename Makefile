@@ -13,6 +13,9 @@ SHORT_SHA = $(shell git rev-parse --short HEAD)
 build-docker: $(DOCKER_SRC)
 	docker build --tag $(IMAGE_NAME):$(BRANCH_NAME) --tag $(IMAGE_NAME):$(BRANCH_NAME)_$(SHORT_SHA) .
 
+build-docker-multiplatform: $(DOCKER_SRC)
+	docker buildx build --platform linux/amd64,linux/arm64 --tag $(IMAGE_NAME):$(BRANCH_NAME) --tag $(IMAGE_NAME):$(BRANCH_NAME)_$(SHORT_SHA) .
+
 run-docker:
 	docker run --name $(CONTAINER_NAME) -p 127.0.0.1:5432:5432 -p 127.0.0.1:5050:5050 -d $(IMAGE_NAME):$(BRANCH_NAME)
 
