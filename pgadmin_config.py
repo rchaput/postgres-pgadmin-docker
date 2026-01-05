@@ -9,14 +9,14 @@ DEFAULT_SERVER = '0.0.0.0'
 # paths. We must specify them so pgAdmin4 can backup, restore, ...
 # (any external process that require invoking `/usr/bin/pg_*`)
 DEFAULT_BINARY_PATHS = {
-    "pg": "/usr/bin",
+    "pg": "/usr/local/bin",
     "pg-13": "",
     "pg-14": "",
     "pg-15": "",
     "pg-16": "",
     "pg-17": "",
     "pg-18": "",
-    "ppas": "/usr/bin",
+    "ppas": "/usr/local/bin",
     "ppas-13": "",
     "ppas-14": "",
     "ppas-15": "",
