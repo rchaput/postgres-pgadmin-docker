@@ -38,14 +38,23 @@ docker run --name YOUR_CONTAINER_NAME -p 127.0.0.1:5050:5050 -d rchaput/postgres
 
 You may now access the pgAdmin4 UI at [http://localhost:5050/](http://localhost:5050/)
 
-*Notes*:
 
-- Specifying `127.0.0.1` when binding the port ensures that only the local interface can be used to access pgAdmin4. Using the (concise) `5050:5050` notation binds to *all* interfaces and is therefore **unsafe**.
+> [!CAUTION]
+> Specifying `127.0.0.1` when binding the port ensures that only the local interface can be used to access pgAdmin4. 
+> Using the (concise) `5050:5050` notation binds to *all* interfaces and is therefore **unsafe**.
 
 
 ## Other technical details
 
-This image is based on the Debian (Bookworm) version of Postgres. You may access a shell (Bash) if necessary by using:
+This image is based on the Alpine version of Postgres. For most aspects it should be quite similar to the Debian version.
+
+Versions are:
+
+- Alpine 3.23.0
+- Postgres 18
+- pgAdmin4 v9.11
+
+You may access a shell (Bash) if necessary by using:
 
 ```shell
 docker exec -it YOUR_CONTAINER_NAME bash
@@ -69,6 +78,8 @@ docker cp YOUR_BACKUP.tar YOUR_CONTAINER_NAME:/root/
 
 where `YOUR_BACKUP.tar` is the path (relative or absolute) to the backup file you want to copy, and `YOUR_CONTAINER_NAME` is the name of an existing container.
 
+You can also use a bind mount, to more easily copy files back-and-forth, especially if you need to save the SQL commands you entered on the pgAdmin4 web UI.
+
 ---
 
 You may also restore a database from such a backup file directly from the command line, rather than using the pgAdmin4 UI, by using the following command in a container shell:
@@ -81,7 +92,7 @@ You may also restore a database from such a backup file directly from the comman
 
 The base Postgres image also exposes the `5432` port for direct access to Postgres. This should not be necessary, as you can access Postgres through pgAdmin4, but you may also bind this port when instantiating the container, by using several `-p` arguments: `docker run --name YOUR_CONTAINER_NAME -p 127.0.0.1:5432:5432 -p 127.0.0.1:5050:5050 -d rchaput/postgres_pgadmin4:latest`
 
-Of course, the host port can be changed if 5432 or 5050 are already in use.
+Of course, the host ports can be changed if 5432 or 5050 are already in use.
 
 
 ## Contributing
