@@ -44,6 +44,35 @@ You may now access the pgAdmin4 UI at [http://localhost:5050/](http://localhost:
 > Using the (concise) `5050:5050` notation binds to *all* interfaces and is therefore **unsafe**.
 
 
+## Exchanging files with pgAdmin within the container
+
+Although pgAdmin uses a Web interface, it actually uses the container's local storage when using files, especially for backup and restore.
+You may place database backups (e.g., `.tar` files) in the container's `/root` folder to be able to restore them from pgAdmin.
+Conversely, when backing up a database in pgAdmin, the file is saved in the `/root` folder.
+
+You can access this folder by either:
+
+- using a bind mount when creating the container:
+
+```shell
+docker run --name YOUR_CONTAINER_NAME -p 127.0.0.1:5050:5050 -v YOUR_LOCAL_FOLDER:/root/data -d rchaput/postgres_pgadmin4:latest
+```
+
+where `YOUR_LOCAL_FOLDER` is the path to a desired folder (dedicated to this), for example, `/home/me/MyPgsqlData`.
+
+- copying files to and from the container:
+
+```shell
+# To "download" (from container to host)
+docker cp YOUR_CONTAINER_NAME:/root/mybackup.tar YOUR_LOCAL_FOLDER/
+
+# To "upload" (from host to container)
+docker cp YOUR_LOCAL_FOLDER/mybackup.tar YOUR_CONTAINER_NAME:/root
+```
+
+where `YOUR_CONTAINER_NAME` and `YOUR_LOCAL_FOLDER` are as previously.
+
+
 ## Other technical details
 
 This image is based on the Alpine version of Postgres. For most aspects it should be quite similar to the Debian version.
@@ -70,23 +99,13 @@ pgAdmin4 binaries and configuration files are located at: `/usr/pgadmin4`; data 
 
 ---
 
-You may place database backups (e.g., `.tar` files) in the `/root` folder to be able to restore them as databases and use existing data, by using the following command:
-
-```shell
-docker cp YOUR_BACKUP.tar YOUR_CONTAINER_NAME:/root/
-```
-
-where `YOUR_BACKUP.tar` is the path (relative or absolute) to the backup file you want to copy, and `YOUR_CONTAINER_NAME` is the name of an existing container.
-
-You can also use a bind mount, to more easily copy files back-and-forth, especially if you need to save the SQL commands you entered on the pgAdmin4 web UI.
-
----
-
-You may also restore a database from such a backup file directly from the command line, rather than using the pgAdmin4 UI, by using the following command in a container shell:
+You may also restore a database from backup files directly from the command line, rather than using the pgAdmin4 UI, by using the following command in a container shell:
 
 ```shell
 /usr/bin/pg_restore -d YOUR_DATABASE_NAME --create --username=postgres /root/YOUR_BACKUP.tar
 ```
+
+Assuming that `/root/YOUR_BACKUP.tar` points to a backup already existing or that you have placed here (see Exchanging files).
 
 ---
 
