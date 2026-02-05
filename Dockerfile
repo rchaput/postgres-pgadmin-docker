@@ -3,7 +3,7 @@ FROM postgres:18.1-alpine
 # Set a few metadata (labels)
 LABEL org.opencontainers.image.authors="Remy Chaput" \
       org.opencontainers.image.url="https://github.com/rchaput/postgres-pgadmin-docker" \
-      org.opencontainers.image.version="3.1" \
+      org.opencontainers.image.version="3.2" \
       org.opencontainers.image.name="Postgres pgAdmin4" \
       org.opencontainers.image.description="A Docker image that contains both PostgreSQL (a database management system) and pgAdmin4 (a Web UI for Postgres), for teaching purposes."
 
